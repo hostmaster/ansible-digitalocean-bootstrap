@@ -7,6 +7,7 @@ Just run `sudo pip install -r requirements.txt` and following packages will be i
 ```
 ansible 1.6 (git)
 dopy python module
+passlib python module
 ```
 Ansible 1.6 (development) is required for this playbook, `ufw` and `debconf` modules are not available in stable version yet. 
 
