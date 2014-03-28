@@ -2,6 +2,8 @@ This is an Ansible playbook to create and bootstrap a brand new DigitalOcean vir
 
 Tested With Ubuntu LTS 12.04 32bit
 
+Be aware this playbook is not idempotent at least the part which in charge of droplet creation. So if you run it twice you will get two droplets. 
+
 # Setup
 Just run `sudo pip install -r requirements.txt` and following packages will be installed 
 ```
