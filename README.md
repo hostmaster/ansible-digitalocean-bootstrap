@@ -1,32 +1,30 @@
-
 This is an Ansible playbook to create and bootstrap a brand new DigitalOcean virtual server. 
 
 Tested With Ubuntu LTS 12.04 32bit
 
 # Setup
-just run `sudo pip install -r requirements.txt` and following packages will be installed 
+Just run `sudo pip install -r requirements.txt` and following packages will be installed 
 ```
 ansible 1.6 (git)
 dopy python module
 ```
-Ansible 1.6 is required for this playbook, `ufw` and `debconf` modules not available in stable version yet
+Ansible 1.6 (development) is required for this playbook, `ufw` and `debconf` modules are not available in stable version yet. 
 
 # Initial configuration
 You should know you `Client ID` and `API key` from you Digital Ocean [account](https://cloud.digitalocean.com/droplets)
 
-All configurable variables are in `vars.yml` file.
-Those variables are required
+All configurable variables are in `vars.yml` file. Mandatory parameters are below
 * DigitalOcean `Client ID`
 * DigitalOcean `API key`
 * ssh public key file
 
 # Run! 
+
 ```
 ansible-playbook -i localhost newdroplet.yml
 ```
 Be aware playbook will change root password you received by email. SSH login for the root user will be disabled as well
 so use admin user account and `sudo` instead. All new passwords will be saved into ./credentials/$hostname/$username files.
-
 
 # Playbook is actually doing steps
 
