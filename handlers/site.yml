@@ -1,0 +1,8 @@
+- name: restart sshd
+  service: name=ssh state=restarted
+
+- name: restart postfix 
+  service: name=postfix state=restarted
+
+- name: update aliases
+  command: newaliases

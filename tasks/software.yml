@@ -1,0 +1,52 @@
+- name: Install updates
+  apt: upgrade=dist update_cache=yes
+
+- name: Set system wide mail settings
+  debconf: >
+    name=postfix
+    question="{{ item.q }}"
+    value="{{ item.v }}"
+    vtype="{{ item.t }}"
+  with_items:
+    - { q: 'postfix/main_mailer_type', t: 'select',  v: 'Internet Site' }
+    - { q: 'postfix/mailname',         t: 'string',  v: 'localhost' }
+    - { q: 'postfix/destinations',     t: 'string',  v: 'localhost.localdomain,localhost,{{ do_hostname }}' }
+
+- name: Install essintial packages
+  apt: pkg="{{ item }}" state=latest 
+  with_items:
+    - ntp
+    - tmux
+    - fail2ban     
+    - postfix
+        
+- name: Configure postfix
+  lineinfile: >
+    dest=/etc/postfix/main.cf
+    state=present
+    backup=yes
+    regexp='^{{ item.key }}\s+=\s+.*$'
+    line='{{ item.key }} = {{ item.value }}'
+  with_items:
+    - { key: 'inet_interfaces', value: 'loopback-only' }
+  notify: restart postfix  
+
+- name: Update mail aliases database
+  lineinfile: >
+    dest=/etc/aliases
+    state=present
+    backup=yes
+    regexp='^{{ item.key }}:\s+.*$'
+    line='{{ item.key }}{{':'}} {{ item.value }}'
+  with_items:
+    - { key: 'root',           value: '{{ do_admin }}' }
+    - { key: '{{ do_admin }}', value: '{{ do_email }}' }
+  notify:
+    - update aliases
+         
+- name: Ensure services is running and enabled
+  service: name="{{ item }}" state=running enabled=yes
+  with_items:
+    - ntp
+    - fail2ban
+    - postfix

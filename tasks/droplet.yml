@@ -1,0 +1,32 @@
+- name: Deploy public key
+  digital_ocean: >
+    state=present
+    command=ssh
+    name=my_ssh_key
+    client_id="{{ client_id }}"
+    api_key="{{ api_key }}"
+    ssh_pub_key="{{ my_pub_key }}"
+  register: do_droplet
+     
+- name: Create Digital Ocean droplet 512Mb/Ubuntu12.04 LTS/Amsterdam
+  digital_ocean: >   
+    state=present
+    command=droplet
+    name="{{ do_hostname }}"
+    client_id="{{ client_id }}"
+    api_key="{{ api_key }}"
+    size_id=66
+    ssh_key_ids="{{ do_droplet.ssh_key.id }}"
+    region_id=5
+    image_id=1505527
+    wait_timeout=600
+  register: do_droplet
+
+- debug: msg="ID is {{ do_droplet.droplet.id }}"
+- debug: msg="IP is {{ do_droplet.droplet.ip_address }}"
+    
+- name: Add new droplet to inventory
+  add_host: >
+    name="{{ do_droplet.droplet.ip_address }}"
+    groups=newdroplets
+          

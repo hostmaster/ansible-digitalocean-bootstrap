@@ -1,0 +1,27 @@
+- name: Create user groups
+  group: name="{{ item }}" state=present
+  with_items:
+    - "{{ sudo_group }}"
+    - "{{ ssh_group }}"
+
+- name: Change ROOT password
+  user: >
+    name=root
+    groups="{{ ssh_group }}"
+    password="{{ item }}"
+  with_password:
+    "../credentials/{{ do_hostname }}/root encrypt=sha512_crypt"
+           
+- name: Create admin user
+  user: >
+    name="{{ do_admin }}"
+    comment="Administrator account"
+    state=present
+    groups="{{ sudo_group }},{{ ssh_group }}"
+    password="{{ item }}"
+    append=yes
+  with_password:
+    "../credentials/{{ do_hostname }}/{{ do_admin }} encrypt=sha512_crypt"
+
+- name: Deploy ssh public key 
+  authorized_key: user="{{ do_admin }}" key="{{ my_pub_key }}"

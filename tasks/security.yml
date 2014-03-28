@@ -1,0 +1,43 @@
+- name: Ensure sudoers.d is enabled
+  lineinfile: >
+    dest=/etc/sudoers
+    regexp='^#includedir /etc/sudoers.d'
+    line='#includedir /etc/sudoers.d'
+    state=present backup=yes
+
+- name: Set up password-less sudo for admin users
+  copy: >
+    content='%{{ sudo_group }} ALL=(ALL) NOPASSWD:ALL'
+    dest=/etc/sudoers.d/admin
+    owner=root group=root mode=0440
+
+- name: Strict SSH access
+  lineinfile: >
+    dest=/etc/ssh/sshd_config
+    state=present
+    regexp='^#?{{ item.key }}'
+    line='{{ item.key }} {{ item.value }}'
+    validate='/usr/sbin/sshd -t -f %s'
+  with_items:
+    - { key: 'PermitRootLogin',        value: 'no'}
+    - { key: 'PasswordAuthentication', value: 'no'}
+    - { key: 'AllowGroups',            value: "sshusers"}
+    - { key: 'MaxAuthTries',           value: "5"}
+    - { key: 'LoginGraceTime',         value: "60"}
+    - { key: 'MaxSessions',            value: "5"}
+    - { key: 'MaxStartups',            value: "10:30:60"}
+  notify: restart sshd
+
+- name: Delete server ssh keys
+  shell: rm -rf /etc/ssh/ssh_host_*
+  
+- name: Re-generate server ssh keys
+  command: dpkg-reconfigure openssh-server
+  notify: restart sshd
+  
+- name: Configure firewall for SSH
+  ufw: rule=allow name=OpenSSH
+     
+- name: Enable firewall 
+  ufw: state=enabled 
+
