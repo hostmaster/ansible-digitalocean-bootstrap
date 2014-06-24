@@ -1,17 +1,17 @@
-This is an Ansible playbook to create and bootstrap a brand new DigitalOcean virtual server. 
+This is an [Ansible](http://ansible.com) playbook to bootstrap a brand new DigitalOcean virtual server. 
 
 Tested With Ubuntu LTS 12.04 32bit
 
-Be aware this playbook is not idempotent at least the part which in charge of droplet creation. So if you run it twice you will get two droplets. 
+Please *be aware* this playbook is *not* [idempotent](http://docs.ansible.com/glossary.html#idempotency) at least the part which in charge of droplet creation. So if you run it twice you will get two droplets. 
 
 # Setup
 Just run `sudo pip install -r requirements.txt` and following packages will be installed 
 ```
-ansible 1.6 (git)
+ansible
 dopy python module
 passlib python module
 ```
-Ansible 1.6 (development) is required for this playbook, `ufw` and `debconf` modules are not available in stable version yet. 
+Ansible 1.6 or higher is required for this playbook, `ufw` and `debconf` modules are not available in earlier versions. 
 
 # Initial configuration
 You should know you `Client ID` and `API key` from you Digital Ocean [account](https://cloud.digitalocean.com/droplets)
@@ -32,7 +32,6 @@ so use admin user account and `sudo` instead. All new passwords will be saved in
 # Playbook is actually doing steps
 
 ## Droplet 
-
 * deploy ssh keys 
 * create droplet
 
