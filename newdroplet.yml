@@ -13,6 +13,7 @@
   vars_files:
     - vars.yml
   tasks:
+    - wait_for: port=22 delay=10
     - include: tasks/users.yml
     - include: tasks/security.yml
     - include: tasks/software.yml
